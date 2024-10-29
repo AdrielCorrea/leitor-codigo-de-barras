@@ -1,7 +1,7 @@
 streamlit
-pyzbar
-pillow
-imageio
+opencv-python-headless
+Pillow
+
 
 
 
