@@ -1,6 +1,7 @@
 streamlit
 pyzbar
 pillow
-opencv-python
+imageio
+
 
 
