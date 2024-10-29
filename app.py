@@ -1,7 +1,6 @@
 import streamlit as st
 import cv2
 import numpy as np
-from pyzbar.pyzbar import decode
 from PIL import Image
 
 st.title("Leitor de Códigos de Barras")
@@ -21,16 +20,8 @@ if uploaded_file is not None:
     # Converte a imagem para escala de cinza
     gray = cv2.cvtColor(img_array, cv2.COLOR_RGB2GRAY)
 
-    # Decodifica os códigos de barras
-    barcodes = decode(gray)
-
     # Exibe a imagem na interface
     st.image(img, caption="Imagem enviada", use_column_width=True)
 
-    # Exibe os códigos de barras detectados
-    if barcodes:
-        st.write("Códigos de barras detectados:")
-        for barcode in barcodes:
-            st.write(f"**Código:** {barcode.data.decode('utf-8')}")
-    else:
-        st.write("Nenhum código de barras foi detectado.")
+    st.write("Como o OpenCV não suporta decodificação de códigos de barras diretamente, você pode considerar integrar uma API externa ou usar outra biblioteca.")
+
