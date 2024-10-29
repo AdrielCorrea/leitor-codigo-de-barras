@@ -1,7 +1,7 @@
 import streamlit as st
-import cv2
-import numpy as np
+import requests
 from PIL import Image
+import io
 
 st.title("Leitor de Códigos de Barras")
 
@@ -14,14 +14,31 @@ if uploaded_file is not None:
     # Abre a imagem com PIL
     img = Image.open(uploaded_file)
     
-    # Converte a imagem para um array do OpenCV
-    img_array = np.array(img)
-
-    # Converte a imagem para escala de cinza
-    gray = cv2.cvtColor(img_array, cv2.COLOR_RGB2GRAY)
-
     # Exibe a imagem na interface
     st.image(img, caption="Imagem enviada", use_column_width=True)
 
-    st.write("Como o OpenCV não suporta decodificação de códigos de barras diretamente, você pode considerar integrar uma API externa ou usar outra biblioteca.")
+    # Converte a imagem para bytes
+    buffered = io.BytesIO()
+    img.save(buffered, format="PNG")
+    img_bytes = buffered.getvalue()
+
+    # Faz o upload da imagem para a API ZXing
+    response = requests.post(
+        "https://zxing.org/w/decode",
+        files={"file": ("image.png", img_bytes, "image/png")},
+        data={"charset": "UTF-8"}
+    )
+
+    # Verifica se a chamada foi bem-sucedida
+    if response.ok:
+        result = response.json()
+        if "results" in result and result["results"]:
+            st.write("Códigos de barras detectados:")
+            for barcode in result["results"]:
+                st.write(f"**Código:** {barcode['barcode']}")
+        else:
+            st.write("Nenhum código de barras foi detectado.")
+    else:
+        st.write("Erro ao processar a imagem. Tente novamente.")
+
 
