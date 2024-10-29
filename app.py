@@ -1,7 +1,7 @@
 import streamlit as st
-import cv2
-import numpy as np
+from pyzbar.pyzbar import decode
 from PIL import Image
+import imageio
 
 st.title("Leitor de Códigos de Barras")
 
@@ -13,16 +13,13 @@ uploaded_file = st.file_uploader("Escolha uma imagem...", type=["jpg", "png", "j
 if uploaded_file is not None:
     # Abre a imagem
     img = Image.open(uploaded_file)
-    img_array = np.array(img)
+    
+    # Converte a imagem para um formato que o pyzbar pode ler
+    img = img.convert('RGB')
+    img_array = imageio.imread(uploaded_file)
 
-    # Converte a imagem para escala de cinza
-    gray = cv2.cvtColor(img_array, cv2.COLOR_BGR2GRAY)
-
-    # Inicializa o detector de códigos de barras
-    detector = cv2.BarcodeDetector()
-
-    # Detecta códigos de barras na imagem
-    barcodes, _ = detector(gray)
+    # Decodifica os códigos de barras
+    barcodes = decode(img_array)
 
     # Exibe a imagem na interface
     st.image(img, caption="Imagem enviada", use_column_width=True)
@@ -34,4 +31,3 @@ if uploaded_file is not None:
             st.write(f"**Código:** {barcode.data.decode('utf-8')}")
     else:
         st.write("Nenhum código de barras foi detectado.")
-
