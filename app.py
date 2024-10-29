@@ -24,21 +24,18 @@ if uploaded_file is not None:
 
     # Faz o upload da imagem para a API ZXing
     response = requests.post(
-        "https://zxing.org/w/decode",
-        files={"file": ("image.png", img_bytes, "image/png")},
-        data={"charset": "UTF-8"}
+        "https://api.qrserver.com/v1/read-qr-code/",
+        files={"file": ("image.png", img_bytes, "image/png")}
     )
 
     # Verifica se a chamada foi bem-sucedida
     if response.ok:
         result = response.json()
-        if "results" in result and result["results"]:
+        if result and isinstance(result, list) and result[0]['symbol'] and result[0]['symbol'][0]['data']:
             st.write("Códigos de barras detectados:")
-            for barcode in result["results"]:
-                st.write(f"**Código:** {barcode['barcode']}")
+            for barcode in result[0]['symbol']:
+                st.write(f"**Código:** {barcode['data']}")
         else:
             st.write("Nenhum código de barras foi detectado.")
     else:
         st.write("Erro ao processar a imagem. Tente novamente.")
-
-
